@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index"
+      "destination": "/api/index.js"
     },
     {
       "source": "/(.*)",
@@ -12,7 +12,8 @@
     }
   ],
   "functions": {
-    "api/index.ts": {
+    "api/index.js": {
+      "includeFiles": "dist/api.cjs",
       "maxDuration": 30
     }
   }

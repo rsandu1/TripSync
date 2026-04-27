@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import type { Express, RequestHandler } from "express";
 import { db } from "./db";
 import { users } from "@shared/models/auth";

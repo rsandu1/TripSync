@@ -1,4 +1,4 @@
-import apiModule from "../dist/api.cjs";
+import apiModule from "./_bundle.cjs";
 
 const handler = apiModule.default ?? apiModule;
 

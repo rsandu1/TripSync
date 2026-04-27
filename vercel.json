@@ -13,7 +13,7 @@
   ],
   "functions": {
     "api/index.js": {
-      "includeFiles": "dist/api.cjs",
+      "includeFiles": "api/_bundle.cjs",
       "maxDuration": 30
     }
   }

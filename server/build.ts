@@ -1,83 +1,26 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
-
-const allowlist = [
-  "@google/generative-ai",
-  "axios",
-  "connect-pg-simple",
-  "cors",
-  "date-fns",
-  "drizzle-orm",
-  "drizzle-zod",
-  "express",
-  "express-rate-limit",
-  "express-session",
-  "jsonwebtoken",
-  "memorystore",
-  "multer",
-  "nanoid",
-  "nodemailer",
-  "openai",
-  "passport",
-  "passport-local",
-  "pg",
-  "stripe",
-  "uuid",
-  "ws",
-  "xlsx",
-  "zod",
-  "zod-validation-error",
-];
-
-async function getExternals() {
-  const pkg = JSON.parse(await readFile("package.json", "utf-8"));
-
-  const allDeps = [
-    ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.devDependencies || {}),
-  ];
-
-  return allDeps.filter((dep) => !allowlist.includes(dep));
-}
+import { rm } from "fs/promises";
 
 async function buildAll() {
   await rm("dist", { recursive: true, force: true });
+  await rm("api/_bundle.cjs", { force: true });
 
   console.log("building client...");
   await viteBuild();
 
-  const externals = await getExternals();
-
-  console.log("building local server...");
-  await esbuild({
-    entryPoints: ["server/index.ts"],
-    platform: "node",
-    bundle: true,
-    format: "cjs",
-    outfile: "dist/index.cjs",
-    define: {
-      "process.env.NODE_ENV": '"production"',
-    },
-    minify: true,
-    external: externals,
-    logLevel: "info",
-  });
-
-  console.log("building vercel api handler...");
+  console.log("building vercel api bundle...");
   await esbuild({
     entryPoints: ["server/vercel.ts"],
-    platform: "node",
     bundle: true,
+    platform: "node",
     format: "cjs",
-    outfile: "dist/api.cjs",
-    define: {
-      "process.env.NODE_ENV": '"production"',
-    },
-    minify: true,
-    external: externals,
+    outfile: "api/_bundle.cjs",
+    target: "node18",
     logLevel: "info",
   });
+
+  console.log("build complete");
 }
 
 buildAll().catch((err) => {
